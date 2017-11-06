@@ -1,0 +1,11 @@
+<ul id="todoList">
+  {{#each locals.todos}}
+    <li class="todoItem">{{text}}</li>
+  {{/each}}
+</ul>
+
+<form class="todoForm" action="/todos" method="POST">
+  <label for="text">TODO:</label>
+  <input type="text" name="text" value="">
+  <input type="submit" name="" value="ADD">
+</form>

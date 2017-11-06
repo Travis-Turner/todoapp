@@ -10,6 +10,7 @@ const flash = require('connect-flash');
 const {port} = require('./config');
 const {mongoose} = require('./db/mongoose');
 const {User} = require('./db/user');
+const {Todo} = require('./db/todo');
 
 var app = express();
 
@@ -41,7 +42,7 @@ app.get('/', (req, res) => {
 
 // REGISTER ROUTES ----------------------------
 app.get('/register', (req, res) => {
-  res.render('register');
+  res.status(200).render('register');
 });
 
 app.post('/register', (req, res) => {
@@ -72,9 +73,57 @@ app.post('/register', (req, res) => {
   }
 });
 
+// LOGIN ROUTES ----------------------------
+// app.get("/login", locals, (req, res) => {
+//   res.render('login');
+// });
+//
+// app.post("/login", (req, res) => {
+//   var userObj = _.pick(req.body, ['email', 'password']);
+//   User.findOne({ email: userObj.email }).then((user) => {
+//       user.comparePassword(userObj.password, function(err, isMatch) {
+//           if (isMatch) {
+//             user.generateAuthToken().then((token) => {
+//               req.session.token = token;
+//               req.flash('info', 'Successfully logged in!');
+//               res.redirect("/");
+//             })
+//             /* --- --- --- STORE TOKEN IN SESSION --- --- --- */
+//           } else {
+//             req.flash('info', 'Log in failed.  Please try again.');
+//             res.redirect("/login");
+//           }
+//       });
+//   }).catch((e) => {
+//     req.flash('An unknown error occurred.  Please try again.');
+//     res.redirect("/");
+//   });
+// });
+
 // TODOS ROUTES ----------------------------
 app.get('/todos', (req, res) => {
-  res.status(200).send('hello');
+  Todo.find({}).then((todos) => {
+    let data = {
+      locals: {
+        todos
+      }
+    }
+    res.status(200).render('todos', data);
+  });
+});
+
+app.post('/todos', (req, res) => {
+  var todo = _.pick(req.body, ['text']);
+  var now = new Date();
+  var milliseconds = now.getMilliseconds();
+  todo.startedAt = milliseconds;
+  var newTodo = new Todo(todo);
+
+  newTodo.save().then((todo) => {
+    res.redirect('/todos');
+  }).catch((err) => {
+    res.send(err);
+  });
 });
 
 
