@@ -16,6 +16,10 @@ var todoSchema = new mongoose.Schema({
   },
   completedAt: {
     type: Number
+  },
+  owner: {
+    type: String,
+    required: true
   }
 });
 

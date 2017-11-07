@@ -45,7 +45,7 @@ app.get('/', (req, res) => {
   res.redirect('/todos');
 });
 
-app.get('/secret', authenticate, (req, res) => {
+app.get('/secret', (req, res) => {
   res.send('secret page');
 });
 
