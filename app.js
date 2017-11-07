@@ -7,6 +7,8 @@ const cookieParser = require('cookie-parser');
 const session = require('express-session');
 const flash = require('connect-flash');
 
+const methodOverride = require('method-override');
+
 const {port} = require('./config');
 const {mongoose} = require('./db/mongoose');
 const {User} = require('./db/user');
@@ -23,6 +25,7 @@ app.use("/public", express.static(__dirname + '/public'));
 // MIDDLEWARE
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
+app.use(methodOverride('_method'));
 
 app.use(expressValidator());
 
@@ -103,9 +106,17 @@ app.post('/register', (req, res) => {
 // TODOS ROUTES ----------------------------
 app.get('/todos', (req, res) => {
   Todo.find({}).then((todos) => {
+    completedTodos = todos.filter(function(item){
+      return item.completed === true;
+    });
+    todos = todos.filter(function(item){
+      return item.completed === false;
+    });
+
     let data = {
       locals: {
-        todos
+        todos,
+        completedTodos
       }
     }
     res.status(200).render('todos', data);
@@ -125,6 +136,31 @@ app.post('/todos', (req, res) => {
     res.send(err);
   });
 });
+
+app.get('/todos/:id', (req, res) => {
+  res.send(req.params.id);
+});
+
+app.put('/todos/:id', (req, res) => {
+  Todo.findOne({_id: req.params.id}).then((todo) => {
+    todo.completed = true;
+    todo.save();
+    res.redirect('/');
+  })
+  .catch((e) => {
+    console.log(e);
+  });
+});
+
+app.delete('/todos/:id', (req, res) => {
+  Todo.findOne({_id: req.params.id}).then((todo) => {
+    todo.remove();
+    res.redirect('/');
+  })
+  .catch((e) => {
+    console.log(e);
+  })
+})
 
 
 

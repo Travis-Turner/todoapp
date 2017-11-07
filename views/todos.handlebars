@@ -1,6 +1,14 @@
 <ul id="todoList">
   {{#each locals.todos}}
-    <li class="todoItem">{{text}}</li>
+  <div class="todoContainer">
+    <form method="POST" action="/todos/{{_id}}?_method=PUT">
+      <button class="finish-button" type="submit">FINISHED</button>
+    </form>
+        <li class="todoItem">{{text}}</li>
+    <form method="POST" action="/todos/{{_id}}?_method=DELETE">
+      <button class="delete-button" type="submit">DELETE</button>
+    </form>
+  </div>
   {{/each}}
 </ul>
 
@@ -9,3 +17,12 @@
   <input type="text" name="text" value="">
   <input type="submit" name="" value="ADD">
 </form>
+
+<div id="completedTodosContainer">
+  <ul id="completedTodos">
+    <h3>COMPLETED:</h3>
+    {{#each locals.completedTodos}}
+    <li class="completedTodoItem">{{text}}</li>
+    {{/each}}
+  </ul>
+</div>

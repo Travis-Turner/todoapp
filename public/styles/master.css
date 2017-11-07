@@ -1,0 +1,25 @@
+/* --- --- --- global list styles --- --- --- */
+#todoList {
+  list-style: none;
+}
+#todoList li {
+  float: left;
+}
+#main-header {
+  text-align: center;
+}
+
+/* --- --- --- individual todo styles --- --- --- */
+.finish-button {
+  display: inline;
+  float: left;
+  margin-right: 10px;
+}
+.delete-button {
+  margin-left: 10px;
+}
+
+/* --- --- --- completed todo styles --- --- --- */
+.completedTodoItem {
+  text-decoration: line-through;
+}
