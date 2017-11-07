@@ -9,6 +9,18 @@
   text-align: center;
 }
 
+/* --- --- --- navigation styles --- --- --- */
+#nav-container {
+  display: block;
+  width: 100%;
+  overflow: auto;
+}
+#nav-bar li {
+  display: inline;
+  float: left;
+  margin-left: 10px;
+}
+
 /* --- --- --- individual todo styles --- --- --- */
 .finish-button {
   display: inline;

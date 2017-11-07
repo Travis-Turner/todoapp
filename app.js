@@ -13,6 +13,8 @@ const {port} = require('./config');
 const {mongoose} = require('./db/mongoose');
 const {User} = require('./db/user');
 const {Todo} = require('./db/todo');
+const {authenticate} = require('./middleware/authenticate');
+const {locals} = require('./middleware/locals');
 
 var app = express();
 
@@ -41,6 +43,10 @@ app.use(flash());
 // ROOT ROUTE ----------------------------
 app.get('/', (req, res) => {
   res.redirect('/todos');
+});
+
+app.get('/secret', authenticate, (req, res) => {
+  res.send('secret page');
 });
 
 // REGISTER ROUTES ----------------------------
@@ -77,31 +83,48 @@ app.post('/register', (req, res) => {
 });
 
 // LOGIN ROUTES ----------------------------
-// app.get("/login", locals, (req, res) => {
-//   res.render('login');
-// });
-//
-// app.post("/login", (req, res) => {
-//   var userObj = _.pick(req.body, ['email', 'password']);
-//   User.findOne({ email: userObj.email }).then((user) => {
-//       user.comparePassword(userObj.password, function(err, isMatch) {
-//           if (isMatch) {
-//             user.generateAuthToken().then((token) => {
-//               req.session.token = token;
-//               req.flash('info', 'Successfully logged in!');
-//               res.redirect("/");
-//             })
-//             /* --- --- --- STORE TOKEN IN SESSION --- --- --- */
-//           } else {
-//             req.flash('info', 'Log in failed.  Please try again.');
-//             res.redirect("/login");
-//           }
-//       });
-//   }).catch((e) => {
-//     req.flash('An unknown error occurred.  Please try again.');
-//     res.redirect("/");
-//   });
-// });
+app.get("/login", (req, res) => {
+  res.render('login');
+});
+
+app.post("/login", (req, res) => {
+  var userObj = _.pick(req.body, ['email', 'password']);
+  User.findOne({ email: userObj.email }).then((user) => {
+      user.comparePassword(userObj.password, function(err, isMatch) {
+          if (isMatch) {
+            user.generateAuthToken().then((token) => {
+              req.session.token = token;
+              req.flash('info', 'Successfully logged in!');
+              res.redirect("/");
+            })
+            /* --- --- --- STORE TOKEN IN SESSION --- --- --- */
+          } else {
+            req.flash('info', 'Log in failed.  Please try again.');
+            res.redirect("/login");
+          }
+      });
+  }).catch((e) => {
+    req.flash('An unknown error occurred.  Please try again.');
+    res.redirect("/");
+  });
+});
+
+//LOGOUT
+
+app.get('/logout', (req, res) => {
+  var token = req.session.token;
+  User.findByToken(token).then((user) => {
+    user.removeToken(token).then((user) => {
+      req.session.token = "";
+      req.session.destroy;
+      req.flash('info', 'Logged out.');
+      res.redirect("/");
+    });
+  }).catch((e) => {
+    req.flash('An unknown error occurred.  Please try again.');
+    res.redirect("/");
+  });
+});
 
 // TODOS ROUTES ----------------------------
 app.get('/todos', (req, res) => {
